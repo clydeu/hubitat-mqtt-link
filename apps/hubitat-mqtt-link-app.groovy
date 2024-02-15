@@ -399,7 +399,8 @@ def capabilitiesPage() {
 		capability: "capability.motionSensor",
 		attributes: [
 			"motion" // ["inactive", "active"]
-		]
+		],
+		action: "actionMotion"
 	],
 	"notification": [
 		name: "Notification",
@@ -852,8 +853,8 @@ def mqttLinkHandler(evt) {
     def selectedDevice = settings.selectedDevices.find { 
         device -> (device.displayName == deviceName)
     }
-    
-    if (selectedDevice && settings[normalizedId] && capability["attributes"].contains(attribute)) {
+	def attr = attribute.replace("Sensor", "")
+    if (selectedDevice && settings[normalizedId] && capability["attributes"].contains(attr)) {
         if (capability.containsKey("action")) {
             def action = capability["action"]
             json['action'] = action
@@ -1068,6 +1069,17 @@ def actionAlarm(device, attribute, value) {
 			break
 		case "strobe":
 			device.strobe()
+			break
+	}
+}
+
+def actionMotion(device, attribute, value) {
+	switch (value) {
+		case "active":
+			device.active()
+			break
+		case "inactive":
+			device.inactive()
 			break
 	}
 }
